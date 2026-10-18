@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  streamlit_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: enf_streamlit_dashboard
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      # Expose to localhost port 8003 so Caddy can reverse proxy
+      - "127.0.0.1:${APP_HOST_PORT:-8003}:8501"
+    deploy:
+      resources:
+        limits:
+          memory: 450M
+    volumes:
+      - .:/app
+    networks:
+      - enf_network
+
+networks:
+  enf_network:
+    driver: bridge
